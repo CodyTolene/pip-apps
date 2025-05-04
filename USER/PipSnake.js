@@ -23,17 +23,17 @@ const COLOR_BG = '#000';
 const SCORE_HEIGHT = 28;
 
 const DIRECTIONS = [
-  { x: 1, y: 0 },
-  { x: 0, y: 1 },
-  { x: -1, y: 0 },
-  { x: 0, y: -1 },
+  { x: 1, y: 0 }, // Right
+  { x: 0, y: 1 }, // Down
+  { x: -1, y: 0 }, // Left
+  { x: 0, y: -1 }, // Up
 ];
 
-var snake;
-var directionIndex;
-var food;
+var snake = [];
+var directionIndex = 0;
+var food = {};
 var gameOver = true;
-var gameLoopInterval;
+var gameLoopInterval = null;
 var score = 0;
 var borderDrawn = false;
 
