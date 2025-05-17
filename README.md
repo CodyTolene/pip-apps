@@ -289,6 +289,7 @@ wizard that will guide you through the process of minifying your app.
     ├─ USER                        # The directory for user created apps and games.
     │  ├─ <...>                    # Asset folders for user created apps.
     │  └─ *.js                     # User created apps and games (entry file).
+    ├─ USER_BOOT                   # The directory for bootloader apps.
     ├─ .gitignore                  # Git ignore configuration file.
     ├─ .prettierignore             # Prettier ignore configuration file.
     ├─ LICENSE.md                  # The project license file.

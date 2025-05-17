@@ -3,19 +3,25 @@
 //  License: CC-BY-NC-4.0
 //  Repository: https://github.com/CodyTolene/pip-apps
 //  Description: A simple snake game for the Pip-Boy 3000 Mk V.
-//  Version: 1.1.0
+//  Version: 1.2.0
 // =============================================================================
 
 const SCREEN_WIDTH = g.getWidth();
 const SCREEN_HEIGHT = g.getHeight();
 const TILE_SIZE = 16;
-const GRID_WIDTH = Math.floor(SCREEN_WIDTH / TILE_SIZE);
-const GRID_HEIGHT = Math.floor(SCREEN_HEIGHT / TILE_SIZE);
+const LEFT_WALL = 64;
+const RIGHT_WALL = 416;
+const TOP_WALL = 16;
+const BOTTOM_WALL = SCREEN_HEIGHT - 44;
+
+const GRID_WIDTH = Math.floor((RIGHT_WALL - LEFT_WALL) / TILE_SIZE);
+const GRID_HEIGHT = Math.floor((BOTTOM_WALL - TOP_WALL) / TILE_SIZE);
+
 const GAME_SPEED = 200;
-const PADDING_X = 3;
-const PADDING_Y = 0;
 const COLOR_GREEN = '#0F0';
-const COLOR_RED = '#F00';
+const COLOR_BG = '#000';
+const SCORE_HEIGHT = 28;
+
 const DIRECTIONS = [
   { x: 1, y: 0 }, // Right
   { x: 0, y: 1 }, // Down
@@ -23,146 +29,100 @@ const DIRECTIONS = [
   { x: 0, y: -1 }, // Up
 ];
 
-var snake,
-  directionIndex,
-  food,
-  gameOver,
-  gameLoopInterval,
-  score = 0;
+var snake = [];
+var directionIndex = 0;
+var food = {};
+var gameOver = true;
+var gameLoopInterval = null;
+var score = 0;
+var borderDrawn = false;
 
-function stopGame() {
-  if (gameLoopInterval) {
-    clearInterval(gameLoopInterval);
+function drawBorders() {
+  if (borderDrawn) return;
+  borderDrawn = true;
+
+  g.setColor(COLOR_GREEN);
+
+  g.drawLine(LEFT_WALL, TOP_WALL, RIGHT_WALL, TOP_WALL); // Top
+  g.drawLine(LEFT_WALL, BOTTOM_WALL, RIGHT_WALL, BOTTOM_WALL); // Bottom
+  g.drawLine(LEFT_WALL, TOP_WALL, LEFT_WALL, BOTTOM_WALL); // Left
+  g.drawLine(RIGHT_WALL, TOP_WALL, RIGHT_WALL, BOTTOM_WALL); // Right
+}
+
+function drawCell(gridX, gridY, mode) {
+  const px = LEFT_WALL + gridX * TILE_SIZE;
+  const py = TOP_WALL + gridY * TILE_SIZE;
+
+  if (mode === 'clear') {
+    g.setColor(COLOR_BG);
+    g.fillRect(px, py, px + TILE_SIZE - 1, py + TILE_SIZE - 1);
+  } else {
+    g.setColor(COLOR_GREEN);
+    if (mode === 'hollow') {
+      g.drawCircle(px + TILE_SIZE / 2, py + TILE_SIZE / 2, TILE_SIZE / 3);
+    } else {
+      g.fillRect(px, py, px + TILE_SIZE - 1, py + TILE_SIZE - 1);
+    }
   }
-
-  gameOver = true;
-  g.clear();
-  E.reboot();
-}
-
-function resetGame() {
-  snake = [{ x: 5, y: 5 }];
-  directionIndex = 0; // Start as moving right
-  food = { x: 8, y: 5 };
-  gameOver = false;
-  score = 0;
-
-  spawnFood();
-  g.clear();
-  drawCell(food.x, food.y, COLOR_RED); // Initial food
-  drawScore(); // Initial score
-  snake.forEach(
-    (
-      segment, // Initial snake
-    ) => drawCell(segment.x, segment.y, COLOR_GREEN),
-  );
-
-  if (gameLoopInterval) {
-    clearInterval(gameLoopInterval);
-  }
-  gameLoopInterval = setInterval(gameLoop, GAME_SPEED);
-}
-
-function spawnFood() {
-  var newX, newY, collision;
-
-  do {
-    newX = Math.floor(Math.random() * (GRID_WIDTH - PADDING_X * 2)) + PADDING_X;
-    newY =
-      Math.floor(Math.random() * (GRID_HEIGHT - PADDING_Y * 2)) + PADDING_Y;
-    collision = snake.some(
-      (segment) => segment.x === newX && segment.y === newY,
-    );
-  } while (collision);
-
-  food.x = newX;
-  food.y = newY;
-}
-
-function drawCell(x, y, color) {
-  g.setColor(color);
-
-  const px = x * TILE_SIZE + PADDING_X;
-  const py = y * TILE_SIZE + PADDING_Y;
-
-  g.fillRect(px, py, px + TILE_SIZE - 1, py + TILE_SIZE - 1);
 }
 
 function drawScore() {
-  const fixedWidth = 120;
-  const rectX = (SCREEN_WIDTH - fixedWidth) / 2;
-  const rectY = SCREEN_HEIGHT - 26;
-  g.clearRect(rectX, rectY, rectX + fixedWidth, SCREEN_HEIGHT);
+  g.setColor(COLOR_BG);
+  g.fillRect(0, SCREEN_HEIGHT - SCORE_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
   g.setColor(COLOR_GREEN);
   g.setFont('6x8', 2);
   g.drawString('Score: ' + score, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 20);
 }
 
+function spawnFood() {
+  let newX, newY, collision;
+  do {
+    newX = Math.floor(Math.random() * GRID_WIDTH);
+    newY = Math.floor(Math.random() * GRID_HEIGHT);
+    collision =
+      Array.isArray(snake) && snake.some((s) => s.x === newX && s.y === newY);
+  } while (collision);
+  return { x: newX, y: newY };
+}
+
 function updateSnake() {
   if (gameOver) return;
 
-  var head = {
+  const head = {
     x: snake[0].x + DIRECTIONS[directionIndex].x,
     y: snake[0].y + DIRECTIONS[directionIndex].y,
   };
 
-  // Wrap around screen
-  if (head.x < PADDING_X) head.x = GRID_WIDTH - 1 - PADDING_X;
-  if (head.x >= GRID_WIDTH - PADDING_X) head.x = PADDING_X;
-  if (head.y < PADDING_Y) head.y = GRID_HEIGHT - 1 - PADDING_Y;
-  if (head.y >= GRID_HEIGHT - PADDING_Y) head.y = PADDING_Y;
+  if (head.x < 0) head.x = GRID_WIDTH - 1;
+  if (head.x >= GRID_WIDTH) head.x = 0;
+  if (head.y < 0) head.y = GRID_HEIGHT - 1;
+  if (head.y >= GRID_HEIGHT) head.y = 0;
 
-  const hasCollided = snake.some(
-    (segment) => segment.x === head.x && segment.y === head.y,
-  );
-  if (hasCollided) {
-    gameOver = true;
-    g.clear();
-
-    g.setColor(COLOR_GREEN);
-    g.setFont('6x8', 4);
-    g.drawString('GAME OVER', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30);
-
-    g.setFont('6x8', 2);
-    g.drawString(
-      'Press tuner-play to restart',
-      SCREEN_WIDTH / 2,
-      SCREEN_HEIGHT / 2 + 10,
-    );
-
+  if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+    stopGame();
     return;
   }
 
-  // Move snake
   snake.unshift(head);
 
-  const isFoodEaten = head.x === food.x && head.y === food.y;
-  if (isFoodEaten) {
+  if (head.x === food.x && head.y === food.y) {
     score++;
-    spawnFood();
+    food = spawnFood();
   } else {
-    // Clear old tail position
     const tail = snake.pop();
-    drawCell(tail.x, tail.y, '#000');
+    drawCell(tail.x, tail.y, 'clear');
   }
 
-  drawCell(head.x, head.y, COLOR_GREEN);
-  drawCell(food.x, food.y, COLOR_RED);
+  drawCell(food.x, food.y, 'hollow');
+  snake.forEach((s) => drawCell(s.x, s.y));
   drawScore();
 }
 
 function handleInput() {
-  if (BTN_TUNEDOWN.read()) {
-    // Turn left
-    directionIndex = (directionIndex + 3) % 4;
-  } else if (BTN_TUNEUP.read()) {
-    // Turn right
-    directionIndex = (directionIndex + 1) % 4;
-  } else if (BTN_TORCH.read()) {
-    stopGame();
-  } else if (BTN_PLAY.read()) {
-    resetGame();
-  }
+  if (BTN_TUNEDOWN.read()) directionIndex = (directionIndex + 3) % 4;
+  else if (BTN_TUNEUP.read()) directionIndex = (directionIndex + 1) % 4;
+  else if (BTN_TORCH.read()) exitGame();
+  else if (BTN_PLAY.read()) resetGame();
 }
 
 function gameLoop() {
@@ -170,115 +130,92 @@ function gameLoop() {
   updateSnake();
 }
 
-function drawGearIcon(x, y, scale) {
-  g.setColor('#FFF');
+function resetGame() {
+  snake = [{ x: 2, y: 2 }];
+  directionIndex = 0;
+  food = spawnFood();
+  gameOver = false;
+  score = 0;
+  borderDrawn = false;
 
-  const toothLength = 2 * scale; // Size of each tooth
-  const toothOffset = 4 * scale; // Distance from center to tooth
-  const radius = 3 * scale; // Outer radius
-  const hole = 1 * scale; // Center radius
+  g.clear();
+  drawBorders();
+  drawScore();
 
-  // Teeth (8 directions)
-  g.fillRect(
-    x - toothOffset - toothLength / 2,
-    y - toothLength / 2,
-    x - toothOffset + toothLength / 2,
-    y + toothLength / 2,
-  ); // Left
-  g.fillRect(
-    x + toothOffset - toothLength / 2,
-    y - toothLength / 2,
-    x + toothOffset + toothLength / 2,
-    y + toothLength / 2,
-  ); // Right
+  if (gameLoopInterval) clearInterval(gameLoopInterval);
+  gameLoopInterval = setInterval(gameLoop, GAME_SPEED);
+}
 
-  g.fillRect(
-    x - toothLength / 2,
-    y - toothOffset - toothLength / 2,
-    x + toothLength / 2,
-    y - toothOffset + toothLength / 2,
-  ); // Top
-  g.fillRect(
-    x - toothLength / 2,
-    y + toothOffset - toothLength / 2,
-    x + toothLength / 2,
-    y + toothOffset + toothLength / 2,
-  ); // Bottom
+function stopGame() {
+  if (gameLoopInterval) clearInterval(gameLoopInterval);
+  gameLoopInterval = null;
+  gameOver = true;
 
-  const diag = toothOffset * 0.707;
-  g.fillRect(
-    x - diag - toothLength / 2,
-    y - diag - toothLength / 2,
-    x - diag + toothLength / 2,
-    y - diag + toothLength / 2,
-  ); // Top-left
-  g.fillRect(
-    x + diag - toothLength / 2,
-    y - diag - toothLength / 2,
-    x + diag + toothLength / 2,
-    y - diag + toothLength / 2,
-  ); // Top-right
-  g.fillRect(
-    x - diag - toothLength / 2,
-    y + diag - toothLength / 2,
-    x - diag + toothLength / 2,
-    y + diag + toothLength / 2,
-  ); // Bottom-left
-  g.fillRect(
-    x + diag - toothLength / 2,
-    y + diag - toothLength / 2,
-    x + diag + toothLength / 2,
-    y + diag + toothLength / 2,
-  ); // Bottom-right
+  g.clear();
+  borderDrawn = false;
 
-  // Gear body
-  g.fillCircle(x, y, radius);
+  g.setColor(COLOR_GREEN);
+  g.setFont('6x8', 2);
+  g.drawString('GAME OVER', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30);
+  g.drawString('Score: ' + score, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 10);
 
-  // Center hole
-  g.setColor('#000');
-  g.fillCircle(x, y, hole);
+  Pip.typeText('\n\nTuner = Restart\nTorch = Exit').then(() => {
+    const waitLoop = setInterval(() => {
+      if (BTN_PLAY.read()) {
+        clearInterval(waitLoop);
+        resetGame();
+      }
+      if (BTN_TORCH.read()) {
+        clearInterval(waitLoop);
+        exitGame();
+      }
+    }, 100);
+  });
+}
+
+function exitGame() {
+  if (gameLoopInterval) clearInterval(gameLoopInterval);
+  gameOver = true;
+  g.clear();
+  E.reboot();
 }
 
 function initializeGame() {
   g.clear();
+  borderDrawn = false;
 
-  g.setColor(COLOR_GREEN);
-  g.setFont('6x8', 4);
-  g.drawString('PIP-SNAKE', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 20);
-  g.setFont('6x8', 2);
-  g.drawString('Press   to START', SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15);
-  drawGearIcon(SCREEN_WIDTH / 2 - 20, SCREEN_HEIGHT / 2 + 15, 2.5);
-
-  const waitLoop = setInterval(() => {
-    if (BTN_PLAY.read()) {
-      clearInterval(waitLoop);
-      resetGame();
-    }
-  }, 100);
+  Pip.typeText('Welcome to Pip-Snake!').then(() =>
+    setTimeout(() => {
+      Pip.typeText(
+        'Right Tune UP/DOWN or Knob = Turn\nTuner-PUSH = Start\nTorch = Exit',
+      ).then(() => {
+        const waitLoop = setInterval(() => {
+          if (BTN_PLAY.read()) {
+            clearInterval(waitLoop);
+            resetGame();
+          }
+          if (BTN_TORCH.read()) {
+            clearInterval(waitLoop);
+            exitGame();
+          }
+        }, 100);
+      });
+    }, 2000),
+  );
 
   Pip.removeAllListeners('knob1');
-  Pip.on('knob1', function (dir) {
-    if (gameOver) {
-      if (dir === 0) resetGame(); // Press to restart
-      return;
-    }
+  Pip.removeAllListeners('knob2');
 
-    if (dir < 0) {
-      directionIndex = (directionIndex + 3) % 4; // Left
-    } else if (dir > 0) {
-      directionIndex = (directionIndex + 1) % 4; // Right
-    }
+  Pip.on('knob1', function (dir) {
+    if (gameOver) return;
+    if (dir < 0) directionIndex = (directionIndex + 3) % 4;
+    else if (dir > 0) directionIndex = (directionIndex + 1) % 4;
   });
 
-  Pip.removeAllListeners('knob2');
   Pip.on('knob2', function (dir) {
     if (gameOver) return;
-
-    if (dir < 0) {
-      directionIndex = (directionIndex + 3) % 4; // Left
-    } else if (dir > 0) {
-      directionIndex = (directionIndex + 1) % 4; // Right
-    }
+    if (dir < 0) directionIndex = (directionIndex + 3) % 4;
+    else if (dir > 0) directionIndex = (directionIndex + 1) % 4;
   });
 }
 
