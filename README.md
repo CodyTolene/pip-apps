@@ -289,9 +289,9 @@ node_modules folder in the SD card root.
 
 **Currently available custom modules**
 
-| Module Name | Description                                                                                                                                                                                                                                                                                                                                            |
-| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pbhs        | pbhs - a library to centralise game high scores and make file I/O for them easy. Reading and writing high score is possible with just a few lines: `let phs = require('pbhs').initPipboyHighScores();\nphs.addHighScore(gameName, score); //returns true if adding the score succeeds\nphs.readHighScores('piptris'); //returns an array of scores   ` |
+| Module Name | Description                                                                                                                                                                                                                                                                                                                                              |
+| :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pbhs        | pbhs - a library to centralise game high scores and make file I/O for them easy. Reading and writing high score is possible with just a few lines: `let phs = require('pbhs').initPipboyHighScores();   phs.addHighScore(gameName, score); //returns true if adding the score succeeds   phs.readHighScores('piptris'); //returns an array of scores   ` |
 
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
