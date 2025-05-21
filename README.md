@@ -30,6 +30,7 @@
   - [Learning app development](#learning-app-development)
   - [Creating a New App/Game](#new-app-game)
   - [Minification](#minification)
+  - [Custom Modules](#custom-modules)
 - [Directory Structure](#directory-structure)
 - [License(s)](#licenses)
 - [Terms of Use](#terms)
@@ -278,26 +279,37 @@ development and testing.
 <!---------------------------------------------------------------------------->
 <!---------------------------------------------------------------------------->
 
+### Custom Modules <a name="custom-modules"></a>
+
+Espruino has a concept of shared libraries, like node. The pip-boy comes
+preloaded with a few of them (fs is one commonly-used example) but we are
+capable of expanding the available libraries by writing our own or loading
+pre-existing ones. The pip-boy will automatically load any modules in the
+node_modules folder in the SD card root.
+
+**Currently available custom modules**
+
+| Module Name | Description                                                                                                                                                                                                                                                                                                                                              |
+| :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pbhs        | pbhs - a library to centralise game high scores and make file I/O for them easy. Reading and writing high score is possible with just a few lines: `let phs = require('pbhs').initPipboyHighScores();   phs.addHighScore(gameName, score); //returns true if adding the score succeeds   phs.readHighScores('piptris'); //returns an array of scores   ` |
+
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------->
+
 ## Directory Structure <a name="directory-structure"></a>
 
-    .
-    ├─ .github                     # GitHub configuration files.
-    ├─ .husky                      # Husky configuration files.
-    ├─ .vscode                     # VS Code configuration files.
-    ├─ docs                        # The Pip-App Loader web app (GitHub Pages hosted)
-    ├─ node_modules                # Node.js dependencies (ignored).
-    ├─ USER                        # The directory for user created apps and games.
-    │  ├─ <...>                    # Asset folders for user created apps.
-    │  └─ *.js                     # User created apps and games (entry file).
-    ├─ .gitignore                  # Git ignore configuration file.
-    ├─ .prettierignore             # Prettier ignore configuration file.
-    ├─ LICENSE.md                  # The project license file.
-    ├─ package-lock.json           # Node.js package lock file.
-    ├─ package.json                # Node.js package file.
-    ├─ prettier.config.cjs         # Prettier configuration file.
-    ├─ registry.json               # The app registry for user created apps.
-    ├─ README.md                   # The project README file.
-    └─ TERMS.md                    # The project terms of use file.
+. ├─ .github # GitHub configuration files. ├─ .husky # Husky configuration
+files. ├─ .vscode # VS Code configuration files. ├─ docs # The Pip-App Loader
+web app (GitHub Pages hosted) ├─ node_modules # Node.js dependencies (ignored).
+├─ USER # The directory for user created apps and games. │ ├─ <...> # Asset
+folders for user created apps. │ └─ \*.js # User created apps and games (entry
+file). ├─ .gitignore # Git ignore configuration file. ├─ .prettierignore #
+Prettier ignore configuration file. ├─ LICENSE.md # The project license file. ├─
+package-lock.json # Node.js package lock file. ├─ package.json # Node.js package
+file. ├─ prettier.config.cjs # Prettier configuration file. ├─ registry.json #
+The app registry for user created apps. ├─ README.md # The project README file.
+└─ TERMS.md # The project terms of use file.
 
 <p align="right">[ <a href="#index">Index</a> ]</p>
 
@@ -391,3 +403,7 @@ Cody Tolene
 [link-pip-boy-docs]: https://log.robco-industries.org/documentation/pipboy-3000/
 [link-pip-boy]: https://pip-boy.com/
 [link-terms]: /TERMS.md
+
+```
+
+```
