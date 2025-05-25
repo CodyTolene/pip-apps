@@ -11,7 +11,8 @@
     "zip": "Pip2048.zip",
     "authors": [
       "@killes007"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "AsteroPIPs",
@@ -25,7 +26,8 @@
     "zip": "AsteroPIPs.zip",
     "authors": [
       "@killes007"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "CustomRadio",
@@ -39,7 +41,8 @@
     "zip": "CustomRadio.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": true
   },
   {
     "id": "FileExplorer",
@@ -53,7 +56,8 @@
     "zip": "FileExplorer.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "GameExample",
@@ -67,7 +71,8 @@
     "zip": "GameExample.zip",
     "authors": [
       ""
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "PipUiPlus",
@@ -81,7 +86,8 @@
     "zip": "PipUiPlus.zip",
     "authors": [
       "@MercurialPony"
-    ]
+    ],
+    "isBootloaderRequired": true
   },
   {
     "id": "PipPong",
@@ -95,7 +101,8 @@
     "zip": "PipPong.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "PipSnake",
@@ -109,7 +116,8 @@
     "zip": "PipSnake.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "PipTacToe",
@@ -123,7 +131,8 @@
     "zip": "PipTacToe.zip",
     "authors": [
       "@pip-4111"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "Piptris",
@@ -137,7 +146,8 @@
     "zip": "Piptris.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "StatsDisplay",
@@ -151,7 +161,8 @@
     "zip": "StatsDisplay.zip",
     "authors": [
       "@gnargle"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "ThemePicker",
@@ -165,7 +176,8 @@
     "zip": "ThemePicker.zip",
     "authors": [
       "@gnargle"
-    ]
+    ],
+    "isBootloaderRequired": true
   },
   {
     "id": "VaultBreaker",
@@ -179,7 +191,8 @@
     "zip": "VaultBreaker.zip",
     "authors": [
       "@TetrisKid48"
-    ]
+    ],
+    "isBootloaderRequired": false
   },
   {
     "id": "Wasteland",
@@ -193,6 +206,7 @@
     "zip": "Wasteland.zip",
     "authors": [
       "@CodyTolene"
-    ]
+    ],
+    "isBootloaderRequired": false
   }
 ]
