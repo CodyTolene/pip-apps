@@ -15,9 +15,6 @@
   },
   "pipFiles": {
     "assets": [
-      "Menu.min.js",
-      "Perks.min.js",
-      "Special.min.js",
       "PERKS/action_boy.avi",
       "PERKS/action_girl.avi",
       "PERKS/adamantium_skeleton.avi",
@@ -104,7 +101,10 @@
       "SPECIAL/_special.dat"
     ],
     "boot": [
-      "PipUiPlusLoader.min.js"
+      "PipUiPlusLoader.min.js",
+      "Menu.min.js",
+      "Perks.min.js",
+      "Special.min.js"
     ],
     "modules": [],
     "user": []

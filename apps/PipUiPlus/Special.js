@@ -1,4 +1,4 @@
-eval(fs.readFile('USER/PipUiPlus/Menu.js'));
+eval(fs.readFile('USER_BOOT/Menu.js'));
 
 const SPECIAL_PATH = 'USER/PipUiPlus/SPECIAL/_special.dat';
 
